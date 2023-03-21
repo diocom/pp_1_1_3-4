@@ -1,7 +1,6 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
-import jm.task.core.jdbc.service.UserServiceImpl;
 import jm.task.core.jdbc.util.Util;
 
 import java.sql.*;
@@ -13,7 +12,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    public void createUsersTable() {
+    public void createUsersTable() throws SQLException {
+        Connection conn = Util.getConnection();
         String query = "CREATE TABLE IF NOT EXISTS `test`.`Users` " +
                 "(" +
                 "`id` INT NOT NULL AUTO_INCREMENT, " +
@@ -22,30 +22,34 @@ public class UserDaoJDBCImpl implements UserDao {
                 "`age` INT NOT NULL, " +
                 "PRIMARY KEY (`id`)) ENGINE INNODB" ;
 
-        try(Connection conn = Util.getConnection();
+        try (conn;
             Statement stmnt = conn.createStatement()) {
             stmnt.executeUpdate(query);
             conn.commit();
         } catch (SQLException e) {
+            conn.rollback();
             throw new RuntimeException(e);
         }
     }
 
-    public void dropUsersTable() {
+    public void dropUsersTable() throws SQLException {
         String query = "DROP TABLE IF EXISTS `test`.`Users` ";
-
-        try(Connection conn = Util.getConnection();
+        Connection conn = Util.getConnection();
+        try(conn;
             Statement stmnt = conn.createStatement()) {
             System.out.println(stmnt.executeUpdate(query));
             conn.commit();
         } catch (SQLException e) {
+            conn.rollback();
             throw new RuntimeException(e);
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
+        Connection conn = Util.getConnection();
         String query = "INSERT INTO Users (name, lastName, age) VALUES (?, ?, ?)";
-        try(Connection conn = Util.getConnection();
+
+        try(conn;
             PreparedStatement ps = conn.prepareStatement(query)) {
             //ps.setLong(1, usr.getId());
             ps.setString(1, name);
@@ -54,17 +58,20 @@ public class UserDaoJDBCImpl implements UserDao {
             ps.executeUpdate();
             conn.commit();
         } catch (SQLException e) {
+            conn.rollback();
             throw new RuntimeException(e);
         }
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws SQLException {
+        Connection conn = Util.getConnection();
         String query = "DELETE FROM Users WHERE id = VALUES (id)";
-        try(Connection conn = Util.getConnection();
+        try(conn;
             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.executeUpdate(query);
             conn.commit();
         } catch (SQLException e) {
+            conn.rollback();
             throw new RuntimeException(e);
         }
     }
@@ -90,9 +97,17 @@ public class UserDaoJDBCImpl implements UserDao {
         return lsu;
     }
 
-    public void cleanUsersTable() {
-        UserServiceImpl usi = new UserServiceImpl();
-        usi.dropUsersTable();
-        usi.createUsersTable();
+    public void cleanUsersTable() throws SQLException {
+        Connection conn = Util.getConnection();
+        String query = "DELETE FROM Users";
+
+        try(conn;
+            PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.executeUpdate(query);
+            conn.commit();
+        } catch (SQLException e) {
+            conn.rollback();
+            throw new RuntimeException(e);
+        }
     }
 }
