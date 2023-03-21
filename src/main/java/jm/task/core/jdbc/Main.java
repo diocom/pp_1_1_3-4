@@ -1,13 +1,16 @@
 package jm.task.core.jdbc;
+import jm.task.core.jdbc.dao.UserDao;
+import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 
 
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         // реализуйте алгоритм здесь
-        UserServiceImpl userService = new UserServiceImpl();
+        UserService userService = new UserServiceImpl() {
+        };
         userService.dropUsersTable();
         userService.createUsersTable();
 
