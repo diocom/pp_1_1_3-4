@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         List<User> allusers = daojdbc.getAllUsers();
         for (User usr : allusers) {
-            System.out.println(usr.toString());
+            System.out.println(usr);
         }
         return allusers;
     }
