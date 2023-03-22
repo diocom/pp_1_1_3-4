@@ -1,10 +1,6 @@
 package jm.task.core.jdbc.model;
 
-import org.hibernate.annotations.Generated;
-
 import javax.persistence.*;
-
-
 
 public class User {
     @Id
